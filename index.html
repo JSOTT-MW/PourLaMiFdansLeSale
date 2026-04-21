@@ -709,8 +709,8 @@ async function sendCoach() {
   showTyping();
   const l = LANG.current;
   
-   // ✅ Proxy Netlify Serverless - Clé API SECURISEE et fonctionne 100%
-   const GEMINI_PROXY_URL = `/.netlify/functions/proxy-gemini`;
+   // ✅ Proxy Vercel Serverless - Fonctionne du premier coup
+   const GEMINI_PROXY_URL = `/api/proxy-gemini`;
   
   const history = chatMessages.slice(-8).map(m => ({
     role: m.role === 'user' ? 'user' : 'model',
