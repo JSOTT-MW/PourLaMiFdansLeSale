@@ -870,7 +870,11 @@ async function submitForm() {
   document.getElementById('form-content').style.display = 'none';
   document.getElementById('form-success').style.display = 'block';
 
-  try { await sendToGoogleSheet(currentOffer, prenom, email, tel, objectif); } catch(e) {}
+    try { 
+      await sendToGoogleSheet(currentOffer, prenom, email, tel, objectif); 
+    } catch(e) {
+      // silent
+    }
 
   let whatAppLink = '';
   if(currentOffer === 'decouverte') {
