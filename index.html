@@ -111,8 +111,6 @@ nav {
 .chat-input-row input::placeholder { color: rgba(255,255,255,0.25); }
 .send-btn { width: 34px; height: 34px; border-radius: 8px; background: var(--gold); border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
 .send-btn svg { width: 14px; height: 14px; fill: var(--black); }
-.chat-blocked { padding: 16px; text-align: center; border-top: 1px solid rgba(219,166,16,0.1); background: rgba(219,166,16,0.04); }
-.chat-blocked p { font-size: 12px; color: var(--white-muted); margin-bottom: 10px; }
 .quick-btns { display: flex; flex-wrap: wrap; gap: 6px; padding: 8px 12px; border-top: 1px solid rgba(219,166,16,0.08); }
 .quick-btn { font-size: 11px; padding: 5px 10px; border: 1px solid rgba(219,166,16,0.2); border-radius: 20px; background: transparent; color: rgba(255,255,255,0.6); cursor: pointer; transition: all 0.2s; }
 .quick-btn:hover { background: var(--gold-dim); color: var(--gold); border-color: rgba(219,166,16,0.4); }
@@ -147,7 +145,7 @@ nav {
 .wave-btn:hover { background: #1560a0; transform: translateY(-1px); }
 .wave-btn svg { width: 20px; height: 20px; flex-shrink: 0; }
 
-/* MENTOR MODAL */
+/* MODALS */
 .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.85); z-index: 999; align-items: center; justify-content: center; padding: 20px; }
 .modal-overlay.open { display: flex; }
 .modal { background: var(--black-soft); border: 1px solid rgba(219,166,16,0.3); border-radius: 12px; padding: 48px 40px; max-width: 480px; width: 100%; position: relative; }
@@ -213,6 +211,9 @@ footer { padding: 48px 60px; border-top: 1px solid rgba(219,166,16,0.1); display
 ::-webkit-scrollbar { width: 4px; }
 ::-webkit-scrollbar-track { background: var(--black); }
 ::-webkit-scrollbar-thumb { background: rgba(219,166,16,0.3); border-radius: 2px; }
+
+/* ERROR MESSAGE */
+.error-bubble { background: rgba(220,38,38,0.15) !important; border-color: rgba(220,38,38,0.3) !important; color: #fca5a5 !important; }
 
 @media (max-width: 768px) {
   nav { padding: 16px 20px; }
@@ -371,7 +372,7 @@ footer { padding: 48px 60px; border-top: 1px solid rgba(219,166,16,0.1); display
       <div class="coach-feature">
         <div class="feature-icon">👤</div>
         <div>
-          <div class="feature-title">Mentor  disponible</div>
+          <div class="feature-title">Mentor disponible</div>
           <div class="feature-text">Pour une session personnalisée d'une semaine avec un vrai mentor, choisis l'offre Premium. Tu seras contacté sous 24h.</div>
         </div>
       </div>
@@ -386,11 +387,9 @@ footer { padding: 48px 60px; border-top: 1px solid rgba(219,166,16,0.1); display
   <div class="reveal">
     <div class="section-label">Tarifs en Francs CFA</div>
     <div class="section-title">Investis dans<br>ton avenir.</div>
-    <div class="section-sub">Paiement sécurisé via Wave (ouvrez votre application avant le paiement), puis remplissez le formulaire sur le site. </div>
+    <div class="section-sub">Paiement sécurisé via Wave (ouvrez votre application avant le paiement), puis remplissez le formulaire sur le site.</div>
   </div>
   <div class="pricing-grid reveal">
-
-    <!-- OFFRE 1 -->
     <div class="price-card">
       <div class="price-tier">Découverte</div>
       <div class="price-amount">3 000</div>
@@ -403,12 +402,8 @@ footer { padding: 48px 60px; border-top: 1px solid rgba(219,166,16,0.1); display
         <li><span class="cross">–</span> Accès multi-jours</li>
         <li><span class="cross">–</span> Mentor</li>
       </ul>
-<button class="wave-btn" onclick="payAndOpenForm('decouverte')">
-  Payer maintenant
-</button>
+      <button class="wave-btn" onclick="payAndOpenForm('decouverte')">Payer maintenant</button>
     </div>
-
-    <!-- OFFRE 2 -->
     <div class="price-card featured">
       <div class="price-badge">Le plus populaire</div>
       <div class="price-tier">Leader</div>
@@ -422,12 +417,8 @@ footer { padding: 48px 60px; border-top: 1px solid rgba(219,166,16,0.1); display
         <li><span class="check">✓</span> Suivi de progression durant 3 jours</li>
         <li><span class="cross">–</span> Mentor</li>
       </ul>
-<button class="wave-btn" onclick="payAndOpenForm('3jours')">
-  Payer maintenant
-</button>
+      <button class="wave-btn" onclick="payAndOpenForm('3jours')">Payer maintenant</button>
     </div>
-
-    <!-- OFFRE 3 -->
     <div class="price-card">
       <div class="price-tier">Premium</div>
       <div class="price-amount">10 000</div>
@@ -440,11 +431,8 @@ footer { padding: 48px 60px; border-top: 1px solid rgba(219,166,16,0.1); display
         <li><span class="check">✓</span> Suivi hebdomadaire</li>
         <li><span class="check">✓</span> Session avec un mentor</li>
       </ul>
-<button class="wave-btn" onclick="payAndOpenForm('premium')">
-  Payer maintenant
-</button>
+      <button class="wave-btn" onclick="payAndOpenForm('premium')">Payer maintenant</button>
     </div>
-
   </div>
 </section>
 
@@ -553,7 +541,7 @@ footer { padding: 48px 60px; border-top: 1px solid rgba(219,166,16,0.1); display
         <input type="tel" id="form-tel" placeholder="+221 7X XXX XX XX" />
       </div>
       <div class="form-group">
-        <label>DESCRIS TON PROJET / OBJECTIF</label>
+        <label>DÉCRIS TON PROJET / OBJECTIF</label>
         <input type="text" id="form-objectif" placeholder="Décris brièvement ce dont tu as besoin" />
       </div>
       <button class="modal-submit" onclick="submitForm()">Confirmer et accéder →</button>
@@ -601,16 +589,21 @@ footer { padding: 48px 60px; border-top: 1px solid rgba(219,166,16,0.1); display
 </div>
 
 <script>
-// ---- COACH IA ----
+// ============================================================
+// COACH IA — CONFIG
+// ============================================================
 const LANG = { current: 'fr' };
 let currentMod = 0;
 let chatMessages = [];
 let isTyping = false;
 
+// URL du proxy Vercel (la clé reste côté serveur)
+const GEMINI_PROXY_URL = '/api/proxy-gemini';
+
 const T = {
   fr: {
     status: '● En ligne',
-    placeholder: 'Écris ton message à Max...',
+    placeholder: 'Écris ton message à Boris...',
     mt: ['🤝 Réseautage','⚡ Anti-procrastination','🎯 Pitch'],
     quick: [
       ["Je ne sais pas comment aborder les gens","Aide-moi à préparer mon pitch","J'ai peur de me présenter en groupe"],
@@ -622,10 +615,11 @@ const T = {
       "Bienvenue ! Je suis Boris, ton coach **anti-procrastination**. ⚡\n\nDis-moi : sur quel projet ou tâche tu procrastines en ce moment ?",
       "Prêt pour l'entraînement ? Je suis Boris, ton **coach pitch**. 🎯\n\nPrésente-moi ton projet et on commence la simulation !"
     ],
+    // ✅ FIX : systemInstruction injecté comme premier échange dans contents
     sys: [
-      `Tu es Boris, un coach professionnel expert en Développement Professionnel  pour jeunes leaders africains. Tu les aides à maîtriser le réseautage professionnel : comment approcher les gens naturellement, s'intégrer dans des cercles professionnels, communiquer avec confiance, et préparer un elevator pitch percutant. Tu es bienveillant, concret et direct. Réponds en français, 3-5 phrases max. Utilise des exemples concrets adaptés au contexte africain.`,
-      `Tu es Boris, un coach anti-procrastination pour jeunes leaders africains. Tu identifies les vraies causes de la procrastination (peur de l'échec, perfectionnisme, manque de clarté) et proposes des plans d'action concrets, étape par étape. Tu es motivant, réaliste et bienveillant. Réponds en français, 3-5 phrases max. Techniques : Pomodoro, règle des 2 minutes, micro-tâches.`,
-      `Tu es Boris, un coach pitch professionnel pour jeunes leaders africains. Tu simules différents profils d'auditoire (jury bienveillant, investisseur exigeant, recruteur pressé) et donnes un feedback structuré sur la clarté, la conviction, la structure et la gestion des objections. Réponds en français, 4-6 phrases max.`
+      "Tu es Boris, un coach professionnel expert en développement professionnel pour jeunes leaders africains. Tu les aides à maîtriser le réseautage professionnel : approcher les gens naturellement, s'intégrer dans des cercles professionnels, communiquer avec confiance, et préparer un elevator pitch percutant. Tu es bienveillant, concret et direct. Réponds en français, 3-5 phrases max. Utilise des exemples concrets adaptés au contexte africain.",
+      "Tu es Boris, un coach anti-procrastination pour jeunes leaders africains. Tu identifies les vraies causes de la procrastination (peur de l'échec, perfectionnisme, manque de clarté) et proposes des plans d'action concrets, étape par étape. Tu es motivant, réaliste et bienveillant. Réponds en français, 3-5 phrases max. Techniques : Pomodoro, règle des 2 minutes, micro-tâches.",
+      "Tu es Boris, un coach pitch professionnel pour jeunes leaders africains. Tu simules différents profils d'auditoire (jury bienveillant, investisseur exigeant, recruteur pressé) et donnes un feedback structuré sur la clarté, la conviction, la structure et la gestion des objections. Réponds en français, 4-6 phrases max."
     ]
   },
   en: {
@@ -643,16 +637,22 @@ const T = {
       "Ready to train? I'm Boris, your **pitch coach**. 🎯\n\nPresent your project and let's start the simulation!"
     ],
     sys: [
-      `You are Boris, a professional coach specialized in personal development for young African graduates. You help them master professional networking: approach people naturally, integrate into professional circles, communicate with confidence, and craft a compelling elevator pitch. You are supportive, practical and direct. Reply in English, max 3-5 sentences. Use concrete examples adapted to the African context.`,
-      `You are Boris, an anti-procrastination coach for young African graduates. You identify the real causes of procrastination (fear of failure, perfectionism, lack of clarity) and propose concrete step-by-step action plans. You are motivating, realistic and supportive. Reply in English, max 3-5 sentences. Techniques: Pomodoro, 2-minute rule, task chunking.`,
-      `You are Boris, a professional pitch coach for young African graduates. You simulate different audience profiles (supportive jury, demanding investor, busy recruiter) and give structured feedback on clarity, conviction, structure and objection handling. Reply in English, max 4-6 sentences.`
+      "You are Boris, a professional coach specialized in personal development for young African graduates. You help them master professional networking: approach people naturally, integrate into professional circles, communicate with confidence, and craft a compelling elevator pitch. You are supportive, practical and direct. Reply in English, max 3-5 sentences. Use concrete examples adapted to the African context.",
+      "You are Boris, an anti-procrastination coach for young African graduates. You identify the real causes of procrastination (fear of failure, perfectionism, lack of clarity) and propose concrete step-by-step action plans. You are motivating, realistic and supportive. Reply in English, max 3-5 sentences. Techniques: Pomodoro, 2-minute rule, task chunking.",
+      "You are Boris, a professional pitch coach for young African graduates. You simulate different audience profiles (supportive jury, demanding investor, busy recruiter) and give structured feedback on clarity, conviction, structure and objection handling. Reply in English, max 4-6 sentences."
     ]
   }
 };
 
+// ============================================================
+// COACH IA — FONCTIONS
+// ============================================================
+
 function setLang(l) {
   LANG.current = l;
-  document.querySelectorAll('.ltbtn').forEach(b => b.classList.toggle('active', b.textContent.toLowerCase().includes(l === 'fr' ? 'fr' : 'en')));
+  document.querySelectorAll('.ltbtn').forEach(b =>
+    b.classList.toggle('active', b.textContent.toLowerCase().includes(l === 'fr' ? 'fr' : 'en'))
+  );
   document.getElementById('coach-status').textContent = T[l].status;
   document.getElementById('coach-input').placeholder = T[l].placeholder;
   chatMessages = [];
@@ -662,7 +662,7 @@ function setLang(l) {
 
 function selectMod(i) {
   currentMod = i;
-  document.querySelectorAll('.mod-tab').forEach((t,j) => t.classList.toggle('active', j===i));
+  document.querySelectorAll('.mod-tab').forEach((t, j) => t.classList.toggle('active', j === i));
   chatMessages = [];
   renderChat();
   initCoach();
@@ -674,15 +674,27 @@ function initCoach() {
   renderQuickBtns();
 }
 
-function addBot(text) { chatMessages.push({role:'bot', text, time: now()}); renderChat(); }
-function addUser(text) { chatMessages.push({role:'user', text, time: now()}); renderChat(); }
-function now() { return new Date().toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'}); }
+function addBot(text, isError) {
+  chatMessages.push({ role: 'bot', text, time: now(), isError: !!isError });
+  renderChat();
+}
+function addUser(text) {
+  chatMessages.push({ role: 'user', text, time: now() });
+  renderChat();
+}
+function now() {
+  return new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+}
 
 function renderChat() {
   const el = document.getElementById('chat-msgs');
   el.innerHTML = chatMessages.map(m => `
     <div class="msg ${m.role}">
-      <div class="bubble">${m.text.replace(/\*\*(.*?)\*\*/g,'<strong>$1</strong>').replace(/\n/g,'<br>')}</div>
+      <div class="bubble ${m.isError ? 'error-bubble' : ''}">${
+        m.text
+          .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+          .replace(/\n/g, '<br>')
+      }</div>
       <span class="msg-time">${m.time}</span>
     </div>
   `).join('');
@@ -691,13 +703,21 @@ function renderChat() {
 
 function renderQuickBtns() {
   const l = LANG.current;
-  document.getElementById('quick-btns-coach').innerHTML = T[l].quick[currentMod].map(b =>
-    `<button class="quick-btn" onclick="useQuick('${b.replace(/'/g,"&#39;")}')">${b}</button>`
-  ).join('');
+  document.getElementById('quick-btns-coach').innerHTML = T[l].quick[currentMod]
+    .map(b => `<button class="quick-btn" onclick="useQuick('${b.replace(/'/g, "&#39;")}')">${b}</button>`)
+    .join('');
 }
 
-function useQuick(t) { document.getElementById('coach-input').value = t; sendCoach(); }
+function useQuick(t) {
+  document.getElementById('coach-input').value = t;
+  sendCoach();
+}
 
+// ============================================================
+// ✅ FIX PRINCIPAL — sendCoach corrigé
+// systemInstruction injecté dans contents[0] comme rôle 'user'
+// suivi d'une réponse 'model' → puis historique conversation
+// ============================================================
 async function sendCoach() {
   if (isTyping) return;
   const inp = document.getElementById('coach-input');
@@ -707,70 +727,86 @@ async function sendCoach() {
   addUser(text);
   document.getElementById('quick-btns-coach').innerHTML = '';
   showTyping();
+
   const l = LANG.current;
-  
-   // ✅ Proxy Vercel Serverless - Fonctionne du premier coup
-   const GEMINI_PROXY_URL = `/api/proxy-gemini`;
-  
+  const systemPrompt = T[l].sys[currentMod];
+
+  // Historique des 8 derniers messages (sans le message système)
   const history = chatMessages.slice(-8).map(m => ({
     role: m.role === 'user' ? 'user' : 'model',
     parts: [{ text: m.text }]
   }));
-  
+
+  // ✅ Structure correcte pour Gemini 2.0 Flash :
+  // - systemInstruction comme premier tour user/model
+  // - puis historique réel de conversation
+  const contents = [
+    {
+      role: 'user',
+      parts: [{ text: systemPrompt }]
+    },
+    {
+      role: 'model',
+      parts: [{ text: 'Compris. Je suis Boris, prêt à t\'accompagner.' }]
+    },
+    ...history
+  ];
+
   try {
-     const res = await fetch(GEMINI_PROXY_URL, {
+    const res = await fetch(GEMINI_PROXY_URL, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        systemInstruction: {
-          parts: [{ text: T[l].sys[currentMod] }]
-        },
-        contents: history,
+        contents,
         generationConfig: {
           temperature: 0.7,
           maxOutputTokens: 1000
         }
       })
     });
-    
+
+    if (!res.ok) {
+      const errData = await res.json().catch(() => ({}));
+      throw new Error(errData?.error?.message || `HTTP ${res.status}`);
+    }
+
     const data = await res.json();
-    const reply = data.candidates?.[0]?.content?.parts?.[0]?.text || '...';
-    
+    const reply = data?.candidates?.[0]?.content?.parts?.[0]?.text;
+
     hideTyping();
-    addBot(reply);
+
+    if (reply) {
+      addBot(reply);
+    } else {
+      const errMsg = data?.error?.message || 'Réponse vide de Gemini.';
+      addBot(l === 'fr' ? `⚠️ Erreur : ${errMsg}` : `⚠️ Error: ${errMsg}`, true);
+    }
+
     renderQuickBtns();
-    
-  } catch(e) {
+
+  } catch (e) {
     hideTyping();
-    console.log(e);
-    addBot(l === 'fr' ? "Une erreur s'est produite. Réessaie." : "An error occurred. Please try again.");
+    addBot(
+      l === 'fr'
+        ? `⚠️ Connexion impossible : ${e.message}. Vérifie ta connexion et réessaie.`
+        : `⚠️ Connection failed: ${e.message}. Check your connection and try again.`,
+      true
+    );
   }
 }
 
-async function sendToGoogleSheet(offer, prenom, email, tel, objectif) {
-  try {
-    await fetch('https://script.google.com/macros/s/AKfycbxB_2s2J9VlMvOeLvCbSelGpVH_QIJjYclNdaCN7neKAqkS2BZsMmLpxoY3fU7TTatJaQ/exec', {
-      method: 'POST',
-      mode: 'no-cors',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        offer: offer,
-        prenom: prenom,
-        email: email,
-        tel: tel,
-        objectif: objectif
-      })
-    });
-  } catch(e) {
-    // Silent fail pour ne pas bloquer l'utilisateur
-    console.log('Données sauvegardées');
-  }
-}
-
+// ============================================================
+// TYPING INDICATOR
+// ============================================================
 function showTyping() {
   isTyping = true;
   const el = document.getElementById('chat-msgs');
-  el.innerHTML += `<div class="msg bot" id="typing-dot"><div class="typing"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div></div>`;
+  el.innerHTML += `
+    <div class="msg bot" id="typing-dot">
+      <div class="typing">
+        <div class="dot"></div><div class="dot"></div><div class="dot"></div>
+      </div>
+    </div>`;
   el.scrollTop = el.scrollHeight;
 }
 function hideTyping() {
@@ -779,133 +815,115 @@ function hideTyping() {
   if (t) t.remove();
 }
 
-// ---- MENTOR MODAL ----
-function openMentorModal() {
-  document.getElementById('mentor-modal').classList.add('open');
-  document.body.style.overflow = 'hidden';
-}
-function closeMentorModal() {
-  document.getElementById('mentor-modal').classList.remove('open');
-  document.body.style.overflow = '';
-  document.getElementById('modal-form-content').style.display = 'block';
-  document.getElementById('modal-success').style.display = 'none';
-}
-document.getElementById('mentor-modal').addEventListener('click', function(e) {
-  if (e.target === this) closeMentorModal();
-});
-
-function submitMentorForm() {
-  const prenom = document.getElementById('mentor-prenom').value.trim();
-  const email = document.getElementById('mentor-email').value.trim();
-  const tel = document.getElementById('mentor-tel').value.trim();
-  if (!prenom || !email || !tel) {
-    alert('Merci de remplir au moins ton prénom, email et téléphone.');
-    return;
+// ============================================================
+// GOOGLE SHEETS — Enregistrement silencieux
+// ============================================================
+async function sendToGoogleSheet(offer, prenom, email, tel, objectif) {
+  try {
+    await fetch('https://script.google.com/macros/s/AKfycbxB_2s2J9VlMvOeLvCbSelGpVH_QIJjYclNdaCN7neKAqkS2BZsMmLpxoY3fU7TTatJaQ/exec', {
+      method: 'POST',
+      mode: 'no-cors',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ offer, prenom, email, tel, objectif })
+    });
+  } catch (e) {
+    console.log('Sheet silent fail:', e.message);
   }
-  document.getElementById('modal-form-content').style.display = 'none';
-  document.getElementById('modal-success').style.display = 'block';
-  setTimeout(() => {
-    window.open('https://chat.whatsapp.com/IzofocgKdhkAvVReUcbPVR?mode=gi_t', '_blank');
-  }, 2000);
 }
 
-// ---- FLUX PAIEMENT + FORMULAIRE ----
+// ============================================================
+// FLUX PAIEMENT + FORMULAIRE
+// ============================================================
 let currentOffer = '';
 
 function payAndOpenForm(offer) {
-  let payUrl = '';
-  if(offer === 'decouverte') {
-    payUrl = 'https://pay.wave.com/m/M_sn_LpJHcDkfZwSw/c/sn/?amount=3000';
-  } else if(offer === '3jours') {
-    payUrl = 'https://pay.wave.com/m/M_sn_LpJHcDkfZwSw/c/sn/?amount=5000';
-  } else if(offer === 'premium') {
-    payUrl = 'https://pay.wave.com/m/M_sn_LpJHcDkfZwSw/c/sn/?amount=10000';
-  }
+  const waveUrls = {
+    decouverte: 'https://pay.wave.com/m/M_sn_LpJHcDkfZwSw/c/sn/?amount=3000',
+    '3jours':   'https://pay.wave.com/m/M_sn_LpJHcDkfZwSw/c/sn/?amount=5000',
+    premium:    'https://pay.wave.com/m/M_sn_LpJHcDkfZwSw/c/sn/?amount=10000'
+  };
 
-  // OUVRE LE FORMULAIRE PREMIEREMENT
-  if(offer === 'premium') {
+  if (offer === 'premium') {
     openMentorModal();
   } else {
     openFormModal(offer);
   }
 
-  // REDIRIGE VERS WAVE DANS LA MEME FENETRE (PAS DE NOUVEL ONGLET)
-  setTimeout(() => {
-    window.location.href = payUrl;
-  }, 600);
+  setTimeout(() => { window.location.href = waveUrls[offer]; }, 600);
 }
 
 function openFormModal(offer) {
   currentOffer = offer;
   document.getElementById('form-modal').classList.add('open');
   document.body.style.overflow = 'hidden';
-  
-  if(offer === 'decouverte') {
-    document.getElementById('form-tag').textContent = 'Offre Découverte · 3 000 FCFA';
-    document.getElementById('form-title').textContent = 'Session Coach 45min';
-  } else if(offer === '3jours') {
-    document.getElementById('form-tag').textContent = 'Pack 3 Jours · 5 000 FCFA';
-    document.getElementById('form-title').textContent = 'Accès Pack 3 jours';
-  }
+  document.getElementById('form-content').style.display = 'block';
+  document.getElementById('form-success').style.display = 'none';
+
+  const labels = {
+    decouverte: { tag: 'Offre Découverte · 3 000 FCFA', title: 'Session Coach 45min' },
+    '3jours':   { tag: 'Pack 3 Jours · 5 000 FCFA',    title: 'Accès Pack 3 jours' }
+  };
+  document.getElementById('form-tag').textContent   = labels[offer]?.tag   || '';
+  document.getElementById('form-title').textContent = labels[offer]?.title || '';
 }
 
 function closeFormModal() {
   document.getElementById('form-modal').classList.remove('open');
   document.body.style.overflow = '';
-  document.getElementById('form-content').style.display = 'block';
-  document.getElementById('form-success').style.display = 'none';
+}
+
+function openMentorModal() {
+  document.getElementById('mentor-modal').classList.add('open');
+  document.body.style.overflow = 'hidden';
+  document.getElementById('premium-form-content').style.display = 'block';
+  document.getElementById('premium-success').style.display = 'none';
+}
+
+function closeMentorModal() {
+  document.getElementById('mentor-modal').classList.remove('open');
+  document.body.style.overflow = '';
 }
 
 async function submitForm() {
-  const prenom = document.getElementById('form-prenom').value.trim();
-  const email = document.getElementById('form-email').value.trim();
-  const tel = document.getElementById('form-tel').value.trim();
+  const prenom   = document.getElementById('form-prenom').value.trim();
+  const email    = document.getElementById('form-email').value.trim();
+  const tel      = document.getElementById('form-tel').value.trim();
   const objectif = document.getElementById('form-objectif').value.trim();
-  
+
   if (!prenom || !email || !tel) {
     alert('Merci de remplir tous les champs obligatoires.');
     return;
   }
-  
+
   document.getElementById('form-content').style.display = 'none';
   document.getElementById('form-success').style.display = 'block';
 
-    try { 
-      await sendToGoogleSheet(currentOffer, prenom, email, tel, objectif); 
-    } catch(e) {
-      // silent
-    }
+  try { await sendToGoogleSheet(currentOffer, prenom, email, tel, objectif); } catch(e) {}
 
-  let whatAppLink = '';
-  if(currentOffer === 'decouverte') {
-    whatAppLink = 'https://wa.me/message/WQ75N5GIVDQ3I1';
-  } else if(currentOffer === '3jours') {
-    whatAppLink = 'https://wa.me/message/WQ75N5GIVDQ3I1';
-  }
-  
-  if(currentOffer === 'decouverte') {
-    document.getElementById('form-success-text').innerHTML = "✅ Paiement confirmé !<br><br>Un expert te contactera immédiatement sur WhatsApp pour ta session de 45min : analyse de risques, conseils, appel vocal ou message écrit avec récapitulatif final.";
-  } else {
-    document.getElementById('form-success-text').innerHTML = "✅ Paiement confirmé !<br><br>Tu accèdes maintenant à ton espace sur WhatsApp.";
-  }
+  const waLinks = {
+    decouverte: 'https://wa.me/message/WQ75N5GIVDQ3I1',
+    '3jours':   'https://wa.me/message/WQ75N5GIVDQ3I1'
+  };
+  const waLink = waLinks[currentOffer] || '#';
 
-  setTimeout(() => {
-    window.open(whatAppLink, '_blank');
-  }, 1500);
+  const successTexts = {
+    decouverte: "✅ Paiement confirmé !<br><br>Un expert te contactera immédiatement sur WhatsApp pour ta session de 45min : analyse, conseils et plan d'action.",
+    '3jours':   "✅ Paiement confirmé !<br><br>Tu accèdes maintenant à ton espace sur WhatsApp."
+  };
 
-  document.getElementById('form-success-text').innerHTML += `<br><br><a href="${whatAppLink}" target="_blank" class="btn-primary" style="display:inline-block;margin-top:20px;">👉 Accéder à WhatsApp maintenant</a>`;
+  document.getElementById('form-success-text').innerHTML =
+    (successTexts[currentOffer] || '') +
+    `<br><br><a href="${waLink}" target="_blank" class="btn-primary" style="display:inline-block;margin-top:20px;">👉 Accéder à WhatsApp maintenant</a>`;
+
+  setTimeout(() => { window.open(waLink, '_blank'); }, 1500);
 }
 
-document.getElementById('form-modal').addEventListener('click', function(e) {
-  if (e.target === this) closeFormModal();
-});
-
 async function submitPremiumForm() {
-  const prenom = document.getElementById('premium-prenom').value.trim();
-  const email = document.getElementById('premium-email').value.trim();
-  const tel = document.getElementById('premium-tel').value.trim();
+  const prenom   = document.getElementById('premium-prenom').value.trim();
+  const email    = document.getElementById('premium-email').value.trim();
+  const tel      = document.getElementById('premium-tel').value.trim();
   const objectif = document.getElementById('premium-objectif').value.trim();
-  
+
   if (!prenom || !email || !tel) {
     alert('Merci de remplir tous les champs obligatoires.');
     return;
@@ -915,21 +933,42 @@ async function submitPremiumForm() {
 
   document.getElementById('premium-form-content').style.display = 'none';
   document.getElementById('premium-success').style.display = 'block';
-  
-  setTimeout(() => {
-    window.open('https://chat.whatsapp.com/IzofocgKdhkAvVReUcbPVR?mode=gi_t', '_blank');
-  }, 1500);
 
-  document.getElementById('premium-success').innerHTML += `<br><br><a href="https://chat.whatsapp.com/IzofocgKdhkAvVReUcbPVR?mode=gi_t" target="_blank" class="btn-primary" style="display:inline-block;margin-top:20px;">👉 Accéder au groupe privé</a>`;
+  const groupLink = 'https://chat.whatsapp.com/IzofocgKdhkAvVReUcbPVR?mode=gi_t';
+
+  document.getElementById('premium-success').innerHTML += `
+    <br><br>
+    <a href="${groupLink}" target="_blank" class="btn-primary" style="display:inline-block;margin-top:20px;">
+      👉 Accéder au groupe privé
+    </a>`;
+
+  setTimeout(() => { window.open(groupLink, '_blank'); }, 1500);
 }
 
-// ---- REVEAL ON SCROLL ----
+// ============================================================
+// FERMETURE MODALS AU CLIC EXTERIEUR
+// ============================================================
+document.getElementById('form-modal').addEventListener('click', function(e) {
+  if (e.target === this) closeFormModal();
+});
+document.getElementById('mentor-modal').addEventListener('click', function(e) {
+  if (e.target === this) closeMentorModal();
+});
+
+// ============================================================
+// SCROLL REVEAL
+// ============================================================
 const reveals = document.querySelectorAll('.reveal');
 const io = new IntersectionObserver(entries => {
-  entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('visible'); io.unobserve(e.target); } });
+  entries.forEach(e => {
+    if (e.isIntersecting) { e.target.classList.add('visible'); io.unobserve(e.target); }
+  });
 }, { threshold: 0.1 });
 reveals.forEach(r => io.observe(r));
 
+// ============================================================
+// INIT
+// ============================================================
 initCoach();
 </script>
 </body>
