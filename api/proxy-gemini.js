@@ -1,18 +1,17 @@
 // ============================================================
 // VERCEL SERVERLESS FUNCTION — api/proxy-gemini.js
-// ✅ Modèle : gemini-2.5-flash-lite (le moins cher mai 2026)
-//    $0.10/1M input · $0.40/1M output
-//    Remplace gemini-2.0-flash (déprécié, arrêt 1er juin 2026)
-// ✅ Outil public ouvert — sans rate limit bloquant
+// ✅ Modèle : gemini-2.5-flash-lite
+//    Le moins cher : $0.10/1M input · $0.40/1M output
+//    Tier gratuit : 1500 req/jour sans carte bancaire
+// ✅ Outil public ouvert
 // ✅ Validation payload stricte
 // ✅ Timeout 15s
 // ✅ Plafond tokens côté serveur
 // ✅ Clé API sécurisée côté serveur
-// ✅ Logs Vercel dashboard
 // ============================================================
 
 const CONFIG = {
-  MODEL:              'gemini-2.5-flash-lite-preview-06-17', // le moins cher
+  MODEL:              'gemini-2.5-flash-lite',
   MAX_TOKENS:         1000,
   MAX_CONTENT_LENGTH: 20,
   MAX_TEXT_LENGTH:    2000,
@@ -99,7 +98,7 @@ export default async function handler(req, res) {
   } catch (err) {
     clearTimeout(timeout);
     if (err.name === 'AbortError') {
-      console.error('[TIMEOUT] Gemini n\'a pas répondu en 15s');
+      console.error('[TIMEOUT]');
       return res.status(504).json({ error: "Délai d'attente dépassé. Réessaie." });
     }
     console.error(`[SERVER_ERROR] ${err.message}`);
