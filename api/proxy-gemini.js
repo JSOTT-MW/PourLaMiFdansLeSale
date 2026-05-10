@@ -1,70 +1,25 @@
 // ============================================================
 // VERCEL SERVERLESS FUNCTION — api/proxy-gemini.js
-// ✅ Outil public ouvert — seuils réalistes pour 2000 users
-// ✅ Rate limiting souple : 50 msg / IP / heure
-// ✅ Anti-abus : validation payload stricte
-// ✅ Timeout 10s anti-blocage
-// ✅ Plafond tokens côté serveur
-// ✅ Logs Vercel dashboard
+// ✅ Outil public ouvert — sans rate limit bloquant
+// ✅ Validation payload stricte (protection injection)
+// ✅ Timeout 10s anti-blocage Vercel
+// ✅ Plafond tokens côté serveur (protection budget Gemini)
+// ✅ Clé API sécurisée côté serveur uniquement
+// ✅ Logs structurés Vercel dashboard
+// ✅ Gestion erreurs Gemini complète
 // ============================================================
 
-const rateLimitStore = new Map();
-
-// ── CONFIGURATION ────────────────────────────────────────────
 const CONFIG = {
-  // 50 messages / heure = ~3-4 sessions de coaching complètes
-  // Un utilisateur normal n'envoie jamais 50 messages en 1h
-  // Seul un bot/abuseur serait bloqué
-  MAX_REQUESTS:       50,
-  WINDOW_MS:          60 * 60 * 1000,  // 1 heure
-  MAX_TOKENS:         1000,
-  MAX_CONTENT_LENGTH: 20,
-  MAX_TEXT_LENGTH:    2000,
-  TIMEOUT_MS:         10_000,
+  MAX_TOKENS:         1000,   // tokens max par réponse Gemini
+  MAX_CONTENT_LENGTH: 20,     // max messages dans contents[]
+  MAX_TEXT_LENGTH:    2000,   // max caractères par message utilisateur
+  TIMEOUT_MS:         10_000, // timeout appel Gemini = 10 secondes
 };
 
-// ── HELPERS ──────────────────────────────────────────────────
-
-function getClientIP(req) {
-  return (
-    req.headers['x-real-ip'] ||
-    req.headers['x-forwarded-for']?.split(',')[0]?.trim() ||
-    req.socket?.remoteAddress ||
-    'unknown'
-  );
-}
-
-function checkRateLimit(ip) {
-  const now = Date.now();
-  const record = rateLimitStore.get(ip);
-
-  if (!record || now - record.windowStart > CONFIG.WINDOW_MS) {
-    rateLimitStore.set(ip, { count: 1, windowStart: now });
-    return { allowed: true, remaining: CONFIG.MAX_REQUESTS - 1, resetIn: CONFIG.WINDOW_MS };
-  }
-
-  if (record.count >= CONFIG.MAX_REQUESTS) {
-    return { allowed: false, remaining: 0, resetIn: CONFIG.WINDOW_MS - (now - record.windowStart) };
-  }
-
-  record.count++;
-  rateLimitStore.set(ip, record);
-  return {
-    allowed:   true,
-    remaining: CONFIG.MAX_REQUESTS - record.count,
-    resetIn:   CONFIG.WINDOW_MS - (now - record.windowStart),
-  };
-}
-
-function cleanupOldEntries() {
-  const now = Date.now();
-  for (const [ip, record] of rateLimitStore.entries()) {
-    if (now - record.windowStart > CONFIG.WINDOW_MS) rateLimitStore.delete(ip);
-  }
-}
-
+// ── VALIDATION PAYLOAD ───────────────────────────────────────
 function validatePayload(body) {
-  if (!body || typeof body !== 'object') return 'Payload invalide.';
+  if (!body || typeof body !== 'object')
+    return 'Payload invalide.';
   if (!Array.isArray(body.contents) || body.contents.length === 0)
     return '"contents" requis et non vide.';
   if (body.contents.length > CONFIG.MAX_CONTENT_LENGTH)
@@ -73,12 +28,13 @@ function validatePayload(body) {
     if (!msg.role || !Array.isArray(msg.parts))
       return 'Chaque message doit avoir "role" et "parts".';
     for (const part of msg.parts) {
-      if (typeof part.text !== 'string') return '"text" doit être une string.';
+      if (typeof part.text !== 'string')
+        return '"text" doit être une string.';
       if (part.text.length > CONFIG.MAX_TEXT_LENGTH)
-        return `Message trop long (max ${CONFIG.MAX_TEXT_LENGTH} car.).`;
+        return `Message trop long (max ${CONFIG.MAX_TEXT_LENGTH} caractères).`;
     }
   }
-  return null;
+  return null; // ✅ valide
 }
 
 // ── HANDLER PRINCIPAL ────────────────────────────────────────
@@ -88,45 +44,30 @@ export default async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
   res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
-  if (req.method === 'OPTIONS') return res.status(204).end();
 
-  if (req.method !== 'POST')
+  if (req.method === 'OPTIONS') {
+    return res.status(204).end();
+  }
+
+  if (req.method !== 'POST') {
     return res.status(405).json({ error: 'Méthode non autorisée.' });
-
-  // ── Rate limiting ──
-  const ip = getClientIP(req);
-  cleanupOldEntries();
-
-  const limit = checkRateLimit(ip);
-
-  res.setHeader('X-RateLimit-Limit',     CONFIG.MAX_REQUESTS);
-  res.setHeader('X-RateLimit-Remaining', limit.remaining);
-  res.setHeader('X-RateLimit-Reset',     Math.ceil(limit.resetIn / 1000));
-
-  if (!limit.allowed) {
-    const minutesLeft = Math.ceil(limit.resetIn / 60000);
-    console.warn(`[RATE_LIMIT] ${ip} bloqué — reset dans ${minutesLeft} min`);
-    return res.status(429).json({
-      error:      `Tu as atteint la limite de ${CONFIG.MAX_REQUESTS} messages par heure. Réessaie dans ${minutesLeft} minute(s).`,
-      retryAfter: minutesLeft,
-    });
   }
 
   // ── Validation payload ──
   const validationError = validatePayload(req.body);
   if (validationError) {
-    console.warn(`[VALIDATION] ${ip} — ${validationError}`);
+    console.warn(`[VALIDATION] ${validationError}`);
     return res.status(400).json({ error: validationError });
   }
 
-  // ── Clé API ──
+  // ── Clé API (variable Vercel — jamais exposée au client) ──
   const GEMINI_KEY = process.env.GEMINI_API_KEY;
   if (!GEMINI_KEY) {
-    console.error('[CONFIG] GEMINI_API_KEY manquante.');
+    console.error('[CONFIG] GEMINI_API_KEY manquante dans les variables Vercel.');
     return res.status(500).json({ error: 'Configuration serveur incorrecte.' });
   }
 
-  // ── Appel Gemini avec timeout ──
+  // ── Appel Gemini avec timeout 10s ──
   const controller = new AbortController();
   const timeout = setTimeout(() => controller.abort(), CONFIG.TIMEOUT_MS);
 
@@ -140,10 +81,10 @@ export default async function handler(req, res) {
         body: JSON.stringify({
           contents: req.body.contents,
           generationConfig: {
-            temperature:     req.body.generationConfig?.temperature     ?? 0.7,
+            temperature: req.body.generationConfig?.temperature ?? 0.7,
             maxOutputTokens: Math.min(
               req.body.generationConfig?.maxOutputTokens ?? CONFIG.MAX_TOKENS,
-              CONFIG.MAX_TOKENS
+              CONFIG.MAX_TOKENS // plafond serveur non négociable
             ),
           },
         }),
@@ -151,24 +92,28 @@ export default async function handler(req, res) {
     );
 
     clearTimeout(timeout);
+
     const data = await geminiResponse.json();
 
+    // Erreur Gemini (quota épuisé, clé invalide, etc.)
     if (!geminiResponse.ok) {
       const msg = data?.error?.message || `Erreur Gemini HTTP ${geminiResponse.status}`;
-      console.error(`[GEMINI_ERROR] ${ip} — ${msg}`);
+      console.error(`[GEMINI_ERROR] ${msg}`);
       return res.status(geminiResponse.status).json({ error: msg });
     }
 
-    console.log(`[OK] ${ip} — remaining: ${limit.remaining}`);
+    console.log('[OK] Réponse Gemini envoyée');
     return res.status(200).json(data);
 
   } catch (err) {
     clearTimeout(timeout);
+
     if (err.name === 'AbortError') {
-      console.error(`[TIMEOUT] ${ip}`);
+      console.error('[TIMEOUT] Gemini n\'a pas répondu en 10s');
       return res.status(504).json({ error: "Délai d'attente dépassé. Réessaie." });
     }
-    console.error(`[SERVER_ERROR] ${ip} — ${err.message}`);
+
+    console.error(`[SERVER_ERROR] ${err.message}`);
     return res.status(500).json({ error: 'Erreur serveur. Réessaie.' });
   }
 }
